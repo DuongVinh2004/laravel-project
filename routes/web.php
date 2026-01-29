@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AgeController;
 
 Route::get('/', fn () => view('home'))->name('home');
 
@@ -28,6 +29,13 @@ Route::get('/banco/{n}', fn ($n) => view('banco', compact('n')));
 
 Route::get('/signin', [AuthController::class, 'signIn'])->name('signin.form');
 Route::post('/signin', [AuthController::class, 'checkSignIn'])->name('signin.check');
+
+Route::get('/age', [AgeController::class, 'show'])->name('age.form');
+Route::post('/age', [AgeController::class, 'store'])->name('age.store');
+
+Route::middleware('check.age')->get('/restricted', function () {
+    return view('restricted');
+})->name('restricted');
 
 Route::fallback(function () {
     return response()->view('error.404', [], 404);
