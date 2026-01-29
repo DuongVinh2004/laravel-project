@@ -1,41 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuthController;
 
-/*Home*/
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', fn () => view('home'))->name('home');
 
-/*Product*/
 Route::prefix('product')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('product.index');
 
-    // /product
-    Route::get('/', function () {
-        $products = [
-            ['id' => 1, 'name' => 'Vàng', 'price' => 999],
-            ['id' => 2, 'name' => 'Bạc', 'price' => 666],
-            ['id' => 3, 'name' => 'Đất', 'price' => 68686899],
-        ];
-        return view('product.index', compact('products'));
-    })->name('product.index');
+    Route::get('/add', fn () => view('product.add'))->name('product.add');
 
-    // /product/add
-    Route::get('/add', function () {
-        return view('product.add');
-    })->name('product.add');
-
-    // /product/{id}
     Route::get('/{id?}', function ($id = '123') {
-        return "Product ID: " . $id;
+        return 'Product ID: ' . $id;
     })->where('id', '[A-Za-z0-9]+');
 });
 
-/*Sinh viên*/
-Route::get('/sinhvien/{name?}/{mssv?}', function (
-    $name = 'Luong Xuan Hieu',
-    $mssv = '123456'
-) {
+Route::get('/sinhvien/{name?}/{mssv?}', function ($name = 'Luong Xuan Hieu', $mssv = '123456') {
     return "
         <h2>Thông tin sinh viên</h2>
         <p>Tên: $name</p>
@@ -43,12 +24,11 @@ Route::get('/sinhvien/{name?}/{mssv?}', function (
     ";
 });
 
-/*Bàn cờ vua*/
-Route::get('/banco/{n}', function ($n) {
-    return view('banco', compact('n'));
-});
+Route::get('/banco/{n}', fn ($n) => view('banco', compact('n')));
 
-/*404*/
+Route::get('/signin', [AuthController::class, 'signIn'])->name('signin.form');
+Route::post('/signin', [AuthController::class, 'checkSignIn'])->name('signin.check');
+
 Route::fallback(function () {
     return response()->view('error.404', [], 404);
 });
